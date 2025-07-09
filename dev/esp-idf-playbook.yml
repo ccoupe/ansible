@@ -1,0 +1,39 @@
+- name: Platformio Setup
+  hosts: all
+  gather_facts: false
+  become: false
+  vars:
+     - version: 1.24.4
+  tasks:
+    - name: install pre-requisite packages
+      become: true
+      ansible.builtin.apt:
+        pkg:
+        - cmake
+        - ninja-build
+        - ccache
+        - libffi-dev
+        - libssl-dev
+        - dfu-util
+        - libusb-1.0-0
+
+    - name: Remove previous
+      command: rm -rf ~/esp
+
+    - name: Make dir ~/esp
+      command: mkdir -p ~/esp
+
+    - name: cd and git clone esp-idf.git
+      shell: cd ~/esp && git clone -b v5.4.1 --recursive https://github.com/espressif/esp-idf.git
+
+    - name: install esp32, esp32s2 esp32c6
+      shell: cd ~/esp/esp-idf && ./install.sh esp32,esp32s2,esp32c6
+
+    - name: Add get-idf alias to ~/.profile
+      lineinfile:
+        path: ~/.profile
+        line: "alias get_idf='. $HOME/esp/esp-idf/export.sh'"
+        create: true
+        state: present
+ 
+

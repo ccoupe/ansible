@@ -1,0 +1,26 @@
+- name: install pspings
+  hosts: all
+  gather_facts: false
+  become: false
+  vars:
+    processes:
+      - restart-node.py
+      - chronyd
+    nfs:
+      - bronco.local:/home/ccoupe/projects
+  tasks: 
+    - name: install pspings
+      command: make install
+      args:
+        chdir: "/home/ccoupe/Projects/iot/pspings"
+    - name: modify root cron list
+      become: true
+      lineinfile: 
+        dest: /root/cron
+        line: '00 00,06,12,18 * * * /usr/local/lib/pspings/pspings.sh >>/dev/nul 2>&1'
+    - name: update root crontab
+      become: true
+      command: crontab cron
+      args:
+        chdir: /root
+        

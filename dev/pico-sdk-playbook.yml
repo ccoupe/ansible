@@ -1,0 +1,13 @@
+- name: Platformio Setup
+  hosts: all
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Download pico_setup.sh
+      command: wget https://raw.githubusercontent.com/raspberrypi/pico-setup/master/pico_setup.sh
+ 
+    - name: make executable
+      command: chmod +x pico_setup.sh
+ 
+    - name: Extract and install
+      shell: ./pico_setup.sh

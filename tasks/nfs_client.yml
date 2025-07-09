@@ -1,0 +1,8 @@
+---
+- name: mount Projects
+  mount:
+    src: bronco.local:/home/ccoupe/Projects
+    path: /home/ccoupe/Projects
+    fstype: nfs
+    state: mounted
+    opts: "auto,nofail,noatime,nolock,intr,tcp,actimeo=1800,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.device-timeout=10s"

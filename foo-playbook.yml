@@ -1,0 +1,17 @@
+- name:  foo and debug
+  become: false
+  hosts: all
+  vars:
+    release: v1.12.3
+    # mediamtx: mediamtx_v1.12.3_linux_arm64.tar.gz
+    arch: "{{ 'arm64' if ansible_facts['architecture'] == 'aarch64' else 'amd64' }}"
+    mediamtx: "mediamtx_{{ release }}_linux_{{ arch }}.tar.gz"
+    # mediamtx_v1.12.3_linux_amd64.tar.gz
+    # mediamtx_v1.12.3_linux_arm64.tar.gz
+  tasks: 
+  - name: Print all available facts
+    ansible.builtin.debug:
+      var: ansible_facts
+  - name: Print arch var 
+    ansible.builtin.debug:
+      var: mediamtx

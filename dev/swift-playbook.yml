@@ -1,0 +1,27 @@
+- name: Swiftly Setup
+  hosts: all
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Download swiftly
+      shell: curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz 
+    - name: untar it 
+      shell:  tar zxf swiftly-$(uname -m).tar.gz 
+    - name: swiftly init
+      shell: ./swiftly init --quiet-shell-followup --assume-yes --platform ubuntu22.04
+    - name: Setup env
+      shell: . ~/.local/share/swiftly/env.sh 
+    - name: hash -r does what? 
+      shell: hash -r
+
+    - name: install libs for swift apps
+      become: true
+      ansible.builtin.apt:
+        pkg:
+        - gnupg2 
+        - libcurl4-openssl-dev 
+        - libxml2-dev 
+        - libz3-dev 
+        - pkg-config
+        - python3-lldb-13
+ 

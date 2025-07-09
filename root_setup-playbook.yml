@@ -1,0 +1,23 @@
+- name: scripts in /root
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: copy_exclude
+      command: cp exclude.txt /root
+      args:
+        chdir: /home/ccoupe/Projects/iot/backup
+    - name: copy_script
+      command: cp /home/ccoupe/Projects/iot/backup/backup.sh /root/backup.sh
+    - name: create_cron if needed
+      command: touch cron
+      args:
+        chdir: /root
+    - name: append to cron
+      shell: echo "5 05 * * mon /root/backup.sh >>/dev/nul 2>&1" >cron
+      args:
+        chdir: /root
+    - name: update crontab
+      shell: crontab cron
+      args:
+        chdir: /root

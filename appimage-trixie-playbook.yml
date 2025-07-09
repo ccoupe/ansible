@@ -1,0 +1,31 @@
+- name: scripts in /root
+  hosts: all
+  gather_facts: false
+  become: true
+  vars:
+    appimage_installation_dir: /home/ccoupe/Applications
+    appimage_download_urls:
+    - 'https://github.com/thomasnordquist/MQTT-Explorer/releases/download/v0.4.0-beta.6/MQTT-Explorer-0.4.0-beta.6.AppImage'
+    - https://github.com/raspberrypi/rpi-imager/releases/download/v1.9.4/Raspberry_Pi_Imager-1.9.4-x86_64.AppImage
+    - https://github.com/rustdesk/rustdesk/releases/download/1.3.0/rustdesk-1.3.0-x86_64.AppImage
+    # - https://github.com/SoftFever/OrcaSlicer/releases/download/v2.3.0/OrcaSlicer_Linux_AppImage_Ubuntu2404_V2.3.0.AppImage
+    # - https://github.com/SoftFever/OrcaSlicer/releases/download/v2.3.0/OrcaSlicer_Linux_AppImage_V2.3.0.AppImage
+  tasks: 
+    - name: Create ~/Applications directory
+      ansible.builtin.file:
+        path: /home/ccoupe/Applications
+        state: directory
+        owner: ccoupe
+        group: ccoupe
+        mode: '755'
+
+    - name: Trixie - libgdk-pixbuf
+      ansible.builtin.apt:
+        name:
+          - libgdk-pixbuf-2.0-0
+
+    - name: Install balena etcher
+      ansible.builtin.apt:
+        deb: https://github.com/balena-io/etcher/releases/download/v2.1.2/balena-etcher_2.1.2_amd64.deb
+  roles:
+    - role: spreadcat.appimage

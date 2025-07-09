@@ -1,0 +1,43 @@
+- name: exim4 smart host playbook
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: install exim4
+      ansible.builtin.apt:
+        name: exim4-daemon-light  
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: /home/ccoupe/Projects/ansible/update-exim4.conf.conf 
+        dest: /etc/exim4/
+    - name: Get hostname
+      shell: hostname
+      register: result
+    - name: Set hostname in conf file
+      lineinfile:
+        dest: /etc/exim4/update-exim4.conf.conf
+        regexp: ^dc_other_hostnames=.*
+        insertafter: ^# dc_other_hostnames=
+        line: dc_other_hostnames={{ result.stdout }}
+    - name: Second hostname in conf file
+      lineinfile:
+        dest: /etc/exim4/update-exim4.conf.conf
+        regexp: ^dc_readhost=.*
+        insertafter: ^# dc_readhost=
+        line: dc_readhost={{ result.stdout }}
+    - name: create /etc/mailname
+      shell: hostname >/etc/mailname
+    - name: update /etc/aliases
+      lineinfile: 
+        dest: /etc/aliases
+        line: '{{ item }}'
+      with_items:
+      - 'root: ccoupe'
+      - 'ccoupe: cecil.coupe@gmail.com'
+    - name: systemd enable
+      shell: systemctl enable exim4
+    - name: update exim4 configuration
+      shell: systemctl restart exim4
+
+
+

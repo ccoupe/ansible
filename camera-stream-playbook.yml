@@ -1,0 +1,82 @@
+- name:  Camera-stream webcam via mediamtx RTSP
+  become: false
+  hosts: all
+  vars:
+    release: v1.9.3
+    arch: "{{ 'arm64' if ansible_facts['architecture'] == 'aarch64' else 'amd64' }}"
+    mediamtx: "mediamtx_{{ release }}_linux_{{ arch }}.tar.gz"
+  tasks: 
+    - name: apt install ffmpeg
+      become: true
+      ansible.builtin.apt:
+        pkg:
+        - ffmpeg
+
+    - name: run camera-stream's install.sh
+      become: false
+      shell: /home/ccoupe/Projects/iot/camera-stream/install.sh
+
+    - name: Create ~/Downloads directory
+      ansible.builtin.file:
+        path: /home/ccoupe/Downloads
+        state: directory
+        owner: ccoupe
+        group: ccoupe
+        mode: '755'
+        
+    - name: Download mediamtx tarball
+      ansible.builtin.get_url:
+        url: "https://github.com/bluenviron/mediamtx/releases/download/{{ release }}/{{ mediamtx }}"
+        dest: /home/ccoupe/Downloads
+        
+    - name: Untar mediamtxt 
+      ansible.builtin.unarchive:
+        remote_src: true
+        dest: /home/ccoupe/Downloads
+        src: "/home/ccoupe/Downloads/{{ mediamtx }}"
+        
+    - name: Copy mediamtx app to /usr/local/bin
+      become: true
+      ansible.builtin.copy:
+        src: /home/ccoupe/Downloads/mediamtx
+        dest: /usr/local/bin
+        remote_src: true
+        mode: "0755"
+        
+    - name: Copy mediamtx.yml to /etc
+      become: true
+      ansible.builtin.copy:
+        src: /home/ccoupe/Downloads/mediamtx.yml
+        dest: /usr/local/etc/
+        remote_src: true
+        
+    - name: Delete mediamtx app from Downloads
+      become: true
+      ansible.builtin.file:
+        path: /home/ccoupe/Downloads/mediamtx
+        state: absent
+        
+    - name: Delete mediamtx LICENSE from Downloads
+      become: true
+      ansible.builtin.file:
+        path: /home/ccoupe/Downloads/LICENSE
+        state: absent
+        
+    - name: Delete mediamtx.yml from Downloads
+      become: true
+      ansible.builtin.file:
+        path: /home/ccoupe/Downloads/mediamtx.yml
+        state: absent
+
+    - name: Enable service mediamtx
+      become: true
+      ansible.builtin.systemd_service:
+        name: mediamtx.service
+        enabled: true
+        daemon_reload: true
+        
+    - name: Restart camera-stream and mediamtx
+      become: true
+      ansible.builtin.systemd_service:
+        name: camera-stream.service
+        state: restarted

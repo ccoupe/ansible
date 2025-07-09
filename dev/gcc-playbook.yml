@@ -1,0 +1,12 @@
+- name: Base dev environment
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: install gcc and editors 
+      ansible.builtin.apt:
+        pkg:
+        - build-essential 
+        - git
+        - vim
+        - geany

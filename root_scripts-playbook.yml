@@ -1,0 +1,17 @@
+- name: scripts in /root
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: install flatpak, htop, cmake  and more
+      ansible.builtin.apt:
+        pkg:
+        - htop
+        - flatpak
+        - avahi-daemon
+        - build-essential
+        - git
+        - cmake
+        - ansible
+    - name: restart avahi-daemon
+      command: systemctl restart avahi-daemon

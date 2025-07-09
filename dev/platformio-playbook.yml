@@ -1,0 +1,22 @@
+- name: Platformio Setup
+  hosts: all
+  gather_facts: false
+  become: false
+  vars:
+     - version: 1.24.4
+  tasks:
+    - name: Download get-platfomio.py
+      command: wget -O get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
+ 
+    - name: Delete previous installation
+      command: rm -rf ~/.platfomio
+ 
+    - name: Extract and install
+      command: python3 get-platformio.py
+
+    - name: Link to platformio binary
+      command: ln -s ~/.platformio/penv/bin/platformio ~/.local/bin/platformio
+    - name: Link to pio binary
+      command: ln -s ~/.platformio/penv/bin/pio ~/.local/bin/pio 
+    - name: Link to piodebuggdb 
+      command: ln -s ~/.platformio/penv/bin/piodebuggdb ~/.local/bin/piodebuggdb

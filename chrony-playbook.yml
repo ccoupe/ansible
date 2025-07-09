@@ -1,0 +1,21 @@
+- name: scripts in /root
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: chrony
+      ansible.builtin.apt:
+        pkg:
+        - chrony
+    - name: setup chrony.conf
+      template:
+        src: /home/ccoupe/Projects/ansible/chrony.conf.j2
+        dest: /etc/chrony/chrony.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+    - name: restart chronyd
+      service:
+        name: chronyd
+        state: restarted

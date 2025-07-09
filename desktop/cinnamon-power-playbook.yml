@@ -1,0 +1,7 @@
+- name: Cinnamon Power settings
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: "Screen off => never"
+      shell: 'gsettings set org.cinnamon.settings-daemon.plugins.power sleep-inactive-ac-timeout 0'

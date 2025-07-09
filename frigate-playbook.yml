@@ -1,0 +1,51 @@
+- hosts: all
+  become: false
+  tasks:
+
+    - name: Install video util packages
+      become: true
+      ansible.builtin.apt:
+        pkg:
+        - v4l-utils
+
+    - name: Create directory for config 
+      become: false
+      ansible.builtin.file:
+        path: "{{ ansible_facts.user_dir }}/frigate/config"
+        state: directory
+        owner: "{{ ansible_facts.user_id }}"
+        group: "{{ ansible_facts.user_id }}"
+        mode: '755'
+
+    - name: Create directory for recordings
+      become: false
+      ansible.builtin.file:
+        path: "{{ ansible_facts.user_dir }}/frigate/cameras"
+        state: directory
+        owner: "{{ ansible_facts.user_id }}"
+        group: "{{ ansible_facts.user_id }}"
+        mode: '755'
+
+    - name: Copy a config file
+      ansible.builtin.copy:
+        src: files/frigate-coral.yml 
+        dest: "{{ ansible_facts.user_dir }}/frigate/config/config.yml"
+        mode: "644"
+
+    - name: Deploy Frigate 
+      become: true
+      community.docker.docker_container:
+        name: frigate
+        # privileged: true
+        shm_size: '4g'
+        #image: ghcr.io/blakeblackshear/frigate:stable
+        image: ghcr.io/blakeblackshear/frigate:0.16.0-beta3
+        ports:
+          - "5000:5000"
+        devices:
+          - /dev/bus/usb:/dev/bus/usb
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+          - "{{  ansible_facts.user_dir }}/frigate/config:/config"
+          - "{{ ansible_facts.user_dir }}/frigate/cameras:/media/frigate"
+        restart_policy: always

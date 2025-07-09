@@ -1,0 +1,9 @@
+- name: install restart node
+  hosts: all
+  gather_facts: false
+  become: false
+  tasks: 
+    - name: install restart node
+      shell: make install
+      args:
+        chdir: "/home/ccoupe/Projects/iot/restart-node"

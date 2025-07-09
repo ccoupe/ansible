@@ -1,0 +1,10 @@
+---
+- name: NFS Mounts
+  become: true
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: install nfs
+      command: apt install -y nfs-common
+    - name: configure_nfs_client
+      include_tasks: tasks/nfs_client.yml

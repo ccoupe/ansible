@@ -1,0 +1,16 @@
+- name: Base dev environment
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks: 
+    - name: install Python3 friends
+      ansible.builtin.apt:
+        pkg:
+        - python3-venv
+        - python3-pip
+    - name: Install uv
+      become: false
+      shell: curl -LsSf https://astral.sh/uv/install.sh | sh
+    - name: Setup ~/venv
+      become: false
+      shell: /home/ccoupe/.local/bin/uv venv --no-project ~/venv 

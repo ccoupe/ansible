@@ -1,0 +1,10 @@
+---
+- name: copy ccoupe entry for sudoers
+  hosts: all
+  become: true
+  tasks:
+    - name: copy file
+      ansible.builtin.copy:
+        src: files/sudoer-ccoupe
+        dest: /etc/sudoers.d/
+        mode: "0600"
