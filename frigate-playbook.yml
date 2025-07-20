@@ -28,7 +28,7 @@
 
     - name: Copy a config file
       ansible.builtin.copy:
-        src: files/frigate-coral.yml 
+        src: "files/{{ inventory_hostname }}/frigate-coral.yml" 
         dest: "{{ ansible_facts.user_dir }}/frigate/config/config.yml"
         mode: "644"
 
@@ -39,13 +39,13 @@
         # privileged: true
         shm_size: '4g'
         #image: ghcr.io/blakeblackshear/frigate:stable
-        image: ghcr.io/blakeblackshear/frigate:0.16.0-beta3
+        image: ghcr.io/blakeblackshear/frigate:0.16.0-beta4
         ports:
           - "5000:5000"
         devices:
           - /dev/bus/usb:/dev/bus/usb
         volumes:
           - /etc/localtime:/etc/localtime:ro
-          - "{{  ansible_facts.user_dir }}/frigate/config:/config"
+          - "{{ ansible_facts.user_dir }}/frigate/config:/config"
           - "{{ ansible_facts.user_dir }}/frigate/cameras:/media/frigate"
         restart_policy: always

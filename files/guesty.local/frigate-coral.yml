@@ -1,0 +1,120 @@
+mqtt:
+  enabled: true
+  host: 192.168.1.2
+  user: ''
+  password: ''
+  topic_prefix: frig-fc
+
+
+cameras:
+  guesty_cam:
+    ffmpeg:
+      hwaccel_args: []
+      inputs:
+        - path: rtsp://192.168.1.47:8554/stream
+          roles:
+            - detect
+            - rtmp
+    record:
+      enabled: true
+      retain:
+        days: 2
+      alerts:
+        retain:
+          days: 1
+      detections:
+        retain:
+          days: 1
+    objects:
+      track:
+        - person
+        - face
+    snapshots:
+      enabled: true
+      timestamp: true
+      bounding_box: false
+      crop: false
+      retain:
+        default: 1
+
+  pi5_cam:
+    ffmpeg:
+      hwaccel_args: []
+      inputs:
+        - path: rtsp://192.168.1.221:8554/stream
+          roles:
+            - detect
+            - rtmp
+    detect:
+      enabled: true
+    record:
+      enabled: true
+      retain:
+        days: 2
+      alerts:
+        retain:
+          days: 1
+      detections:
+        retain:
+          days: 1
+    objects:
+      track:
+        - person
+          face
+    snapshots:
+      enabled: true
+      timestamp: true
+      bounding_box: false
+      crop: false
+      retain:
+        default: 1
+
+  trumpy_cam:
+    ffmpeg:
+      inputs:
+        - path: rtsp://ccoupe:tssgnu@192.168.1.87:554/stream1
+          roles:
+            - detect
+            - rtmp
+    detect:
+      enabled: true
+    record:
+      enabled: true
+      retain:
+        days: 2
+      alerts:
+        retain:
+          days: 1
+      detections:
+        retain:
+          days: 1
+    objects:
+      track:
+        - person
+        - face
+    snapshots:
+      enabled: true
+      timestamp: true
+      bounding_box: false
+      crop: false
+      retain:
+        default: 1
+
+detectors:
+  coral1:
+    type: edgetpu
+    device: usb:0
+detect:
+  enabled: true
+version: 0.16-0
+semantic_search:
+  enabled: false
+  model_size: small
+face_recognition:
+  enabled: true
+  model_size: small
+lpr:
+  enabled: false
+classification:
+  bird:
+    enabled: false
